@@ -2,11 +2,18 @@
 
 ### Added
 
+- Add a `-l`/`--lockfile` command line option to explicitly set the lockfile
+  to use or generate in `pull` or `lock` (#163, @NathanReb)
+
 ### Changed
 
 ### Deprecated
 
 ### Fixed
+
+- Fix a bug where `pull` and `lock` would expect the lockfile to sit in a different place
+  by consistently determining the path to the lockfile based on the project name
+  as specified in the `dune-project` (#163, @NathanReb)
 
 ### Removed
 

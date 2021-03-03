@@ -18,6 +18,16 @@ module Arg = struct
         & opt fpath (Fpath.v (Sys.getcwd ()))
         & info [ "r"; "repo" ] ~docv:"TARGET_REPO" ~doc)
 
+  let lockfile =
+    let doc =
+      "Path to the lockfile to use or generate. Defaults \
+       $(b,<project-name>.opam.locked)"
+    in
+    named
+      (fun x -> `Lockfile x)
+      Cmdliner.Arg.(
+        value & opt (some fpath) None & info [ "l"; "lockfile" ] ~doc)
+
   let yes =
     let doc = "Do not prompt for confirmation and always assume yes" in
     named
@@ -99,3 +109,16 @@ let filter_duniverse ~to_consider (duniverse : Duniverse.t) =
             "The following repos are not in your duniverse: %a"
             Fmt.(list ~sep string)
             unmatched)
+
+let lockfile ~explicit_lockfile repo =
+  match explicit_lockfile with
+  | Some path -> Ok path
+  | None -> (
+      match Repo.lockfile repo with
+      | Ok path -> Ok path
+      | Error (`Msg msg) ->
+          Rresult.R.error_msgf
+            "Couldn't not infer lockfile path from project name: %s\n\n\
+            \         Either set a project name in your dune-project file or \
+             explicitly\n\
+            \         set the path to the lockfile using --lockfile/-l." msg)
