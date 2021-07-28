@@ -23,8 +23,13 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
-      - name: Install Dune
-        run: opam install -y dune
+      - run: opam pin remove opam-monorepo
+
+      - name: Install Dune and latest released opam-monorepo
+        run: opam install -y dune opam-monorepo
+
+      - name: Fetch Dependencies Sources
+        run: opam monorepo pull
 
       - name: Build
         run: opam exec -- dune build
